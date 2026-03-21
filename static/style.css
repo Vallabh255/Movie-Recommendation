@@ -1,271 +1,182 @@
 /* ========================= 1. BASE STYLES ======================== */
 body {
     font-family: 'Segoe UI', sans-serif;
-    margin: 0;
-    padding: 0;
+    margin: 0; padding: 0;
     background-color: #f0f2f5;
     overflow-x: hidden; 
 }
 
 .title {
     font-family: 'Poppins', sans-serif;
-    font-size: 50px;
-    color: rgb(46, 46, 46);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 800;
-    padding-top: 50px;
+    font-size: 50px; color: #333;
+    display: flex; justify-content: center; align-items: center;
+    font-weight: 800; padding-top: 50px;
 }
 
-/* ========================= 2. SEARCH BAR & FILTER MENU ======================== */
+/* ========================= 2. SEARCH BAR ======================== */
 .searchBar {
-    position: relative;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    margin: 20px auto;
-    background-color: white;
-    border-radius: 30px;
-    width: 80%;
-    max-width: 600px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    padding: 5px 20px;
-    z-index: 2000;
+    position: relative; display: flex; align-items: center; justify-content: space-between;
+    margin: 20px auto; background: white; border-radius: 30px;
+    width: 80%; max-width: 600px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    padding: 5px 20px; z-index: 2000;
 }
 
-.searchInput {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: #333;
-    font-size: 1rem;
-    padding: 10px;
-}
+.searchInput { flex: 1; border: none; outline: none; padding: 10px; font-size: 1rem; color: #333; }
+.filterbtn, .okbtn { background: none; border: none; cursor: pointer; display: flex; align-items: center; padding: 5px; }
 
-.filterbtn, .okbtn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
-    display: flex;
-    align-items: center;
-}
-
-.filterbtn img, .okbtn img {
-    width: 24px;
-    height: 24px;
-}
-
+/* Clean Filter Menu */
 .filter-menu {
-    position: absolute;
-    top: 110%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #ffffff;
-    color: #333;
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
-    z-index: 2100;
-    width: 90vw;
-    max-width: 1000px;
-    display: none; 
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    position: absolute; top: 110%; left: 50%; transform: translateX(-50%);
+    background: white; padding: 25px; border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.25); z-index: 2100;
+    width: 90vw; max-width: 400px; display: none; 
 }
+.filter-menu.show { display: block; }
 
-.filter-menu.show {
-    display: block;
-    opacity: 1;
-}
+#filterForm { display: grid; gap: 15px; }
+.filter-options { display: flex; gap: 15px; }
+.filter-section { border: 1px solid #ddd; border-radius: 8px; flex: 1; }
+.filter-section legend { padding: 0 10px; font-weight: 600; color: #555; }
+.filter-section label { display: block; padding: 5px 10px; cursor: pointer; font-size: 0.9rem; color: #333; }
 
-#filterForm {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-}
+.filter-actions { display: flex; gap: 10px; margin-top: 10px; }
+.action-btn { flex: 1; padding: 10px; border-radius: 20px; border: none; font-weight: 600; cursor: pointer; transition: background 0.3s; }
+#applyFilters { background: #333; color: white; }
+#applyFilters:hover { background: #1a1a1a; }
+.reset-btn { background: #e0e0e0; color: #555; }
+.reset-btn:hover { background: #d0d0d0; }
 
 /* ========================= 3. RESULTS HEADER ======================== */
 .results-header {
-    display: none; 
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 5%;
-    margin: 20px 0 0 0; 
+    display: none; justify-content: space-between; align-items: center;
+    padding: 0 5%; margin: 50px 0 10px 0; /* Clear gap above results */
 }
+.results-header.show-results { display: flex !important; }
+.results-header h2 { font-family: 'Poppins', sans-serif; color: #333; margin: 0; }
 
-.results-header.show-results {
-    display: flex !important;
-}
-
+/* Neutralized Button (No Red) */
 .view-all-btn {
-    background: #FF0066;
-    color: white;
-    border: none;
-    padding: 10px 25px;
-    border-radius: 25px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s;
+    background: #333; color: white; border: none;
+    padding: 10px 25px; border-radius: 25px; font-weight: 600;
+    cursor: pointer; transition: background 0.3s;
 }
+.view-all-btn:hover { background: #1a1a1a; }
 
-.view-all-btn:hover {
-    background: #e6005c;
-}
-
-/* ========================= 4. MOVIE CARDS & HOVER POP ======================== */
+/* ========================= 4. MOVIE CARDS (CLEAN ROW) ======================== */
 .results-wrapper {
-    position: relative;
-    /* FIX: Increased top padding to 70px to ensure 'Selected' badge doesn't hit the container edge */
-    padding: 70px 5% 40px 5%; 
-    overflow: visible; 
+    position: relative; padding: 0 5%; overflow: visible !important;
 }
 
 .movie-card {
-    position: relative;
-    flex: 0 0 180px;
+    position: relative; 
+    flex: 0 0 180px; 
+    width: 180px;
+    min-width: 180px; /* THE FIX: Prevents horizontal squishing in the slider */
     max-width: 180px;
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    cursor: pointer;
+    transition: transform 0.3s ease-out; 
+    cursor: pointer; 
     z-index: 1;
+    display: flex;
+    flex-direction: column; /* Keeps text cleanly under the image */
 }
 
+/* Stable hover effect, no badge clipping possible */
 .movie-card:hover {
-    transform: scale(1.1) translateY(-15px);
-    z-index: 1500;
+    transform: scale(1.05) translateY(-5px);
+    z-index: 10;
 }
 
 .movie-card img {
-    width: 100%;
-    aspect-ratio: 2/3;
+    width: 100%; 
+    aspect-ratio: 2/3; 
     object-fit: cover;
-    border-radius: 12px;
+    border-radius: 12px; 
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    display: block; /* Removes invisible spacing under the image */
 }
 
 .movie-card h3 {
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.9rem;
-    margin-top: 10px;
-    color: #333;
+    font-family: 'Poppins', sans-serif; 
+    font-size: 0.85rem;
+    margin-top: 10px; 
+    color: #333; 
+    text-align: center;
 }
 
-/* ========================= 5. SELECTED STATE & BADGE ======================== */
-.selected-movie {
-    outline: 3px solid #FF0066;
-    outline-offset: 6px;
-    border-radius: 12px;
-}
+/* SECTION 5 (SELECTED STATE) & SECTION 6 (GUTTER FIX) ARE REMOVED entirely */
 
-.selected-badge {
-    position: absolute;
-    /* Fixed position to stay within the wrapper's safe zone */
-    top: -35px; 
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #FF0066;
-    color: white;
-    padding: 2px 12px;
-    font-size: 0.7rem;
-    font-weight: bold;
-    border-radius: 4px;
-    white-space: nowrap;
-    z-index: 1600;
-}
-
-/* ========================= 6. SLIDER & FIXED GRID STATES ======================== */
+/* ========================= 5. SLIDER & GRID STATES (SCROLLBAR NUKED) ======================== */
 .results-container.horizontal-scroll {
-    display: flex;
-    flex-wrap: nowrap;
+    display: flex; 
+    flex-wrap: nowrap; 
     overflow-x: auto;
-    /* Browser fix: manually setting visible while scroll is active often fails without extra padding */
-    overflow-y: visible; 
-    gap: 30px; 
-    /* Internal padding to clear the scroller and border */
-    padding: 15px 0;
-    margin-top: -15px;
-    scroll-behavior: smooth;
-    scrollbar-width: none;
+    justify-content: flex-start;
+    gap: 12px; 
+    padding: 15px 0; 
+    /* 🚨 THE FIX: Completely hides the "bar below" in Firefox, IE, and Edge */
+    scrollbar-width: none !important; 
+    -ms-overflow-style: none !important; 
 }
 
-.results-container.horizontal-scroll::-webkit-scrollbar {
-    display: none;
+/* 🚨 THE FIX: Completely hides the scrollbar "bar" in Chrome, Safari, and newer Edge */
+.results-container.horizontal-scroll::-webkit-scrollbar { 
+    display: none !important; 
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+    -webkit-appearance: none !important;
+}
+
+.results-container.horizontal-scroll::-webkit-scrollbar-button {
+    display: none !important; /* Hides the native left/right scrollbar arrows */
 }
 
 .results-container.grid-view {
     display: grid !important; 
-    grid-template-columns: repeat(auto-fill, 180px); 
-    justify-content: space-between; 
-    column-gap: 20px; 
-    row-gap: 80px; /* Space for badges in the next row */
+    grid-template-columns: repeat(auto-fill, 180px);
+    justify-content: center; 
+    column-gap: 12px; 
+    row-gap: 40px; 
     padding: 20px 0; 
-    overflow-y: visible; 
-    overflow-x: hidden; 
 }
 
-.results-container.grid-view .movie-card {
-    width: 180px; 
-    height: fit-content;
-    flex: none;
-    margin: 0;
-}
-
-/* ========================= 7. ARROWS (SLIDER ONLY) ======================== */
+/* ========================= 6. ARROWS (RESTORED TO SOLID) ======================== */
 .scroll-arrow {
-    position: absolute;
-    /* Adjusted top to match the center of the card despite wrapper padding */
-    top: calc(50% + 15px);
+    position: absolute; 
+    top: 50%; 
     transform: translateY(-50%);
-    background: transparent !important;
-    border: none;
+    background: transparent !important; 
+    border: none; 
     cursor: pointer;
-    z-index: 1000;
-    color: #FF0066;
+    z-index: 100; 
+    color: #333; /* Dark monochrome color */
+    opacity: 1; /* Restored to fully solid so you can see them clearly */
     font-size: 4rem; 
-    font-weight: bold;
+    font-weight: bold; 
     display: none !important; 
     padding: 0;
-    transition: color 0.2s ease;
 }
 
-#scrollLeft { left: 10px; }
+.scroll-arrow:hover { 
+    color: #555; 
+}
+
+#scrollLeft { left: 10px; } 
 #scrollRight { right: 10px; }
+.scroll-arrow.show-results { display: flex !important; }
+.results-container.grid-view ~ .scroll-arrow { display: none !important; }
 
-.scroll-arrow.show-results {
-    display: flex !important;
-}
-
-.results-container.grid-view ~ .scroll-arrow {
-    display: none !important;
-}
-
-/* ========================= 8. OVERLAYS & SPINNERS ======================== */
+/* ========================= 7. OVERLAYS & SPINNERS (Mono Fix) ======================== */
 .movie-overlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.85);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center;
     z-index: 5000;
 }
-
 .hidden { display: none !important; }
 
+/* Monopoly-Style Spinner (No Red) */
 .spinner {
-    border: 4px solid rgba(0,0,0,0.1);
-    border-top: 4px solid #FF0066;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
+    border: 4px solid rgba(0,0,0,0.1); border-top: 4px solid #333;
+    border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;
 }
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }

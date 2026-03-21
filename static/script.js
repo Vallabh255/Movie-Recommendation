@@ -5,54 +5,58 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterForm = document.getElementById('filterForm');
 
     // --- Filter Menu Logic ---
-    filterBtn.addEventListener('click', (event) => {
-        event.stopPropagation();
-        filterMenu.classList.toggle('show');
-    });
-
-    filterMenu.addEventListener('click', (event) => {
-        event.stopPropagation();
-    });
-
-    document.addEventListener('click', () => {
-        filterMenu.classList.remove('show');
-    });
-
-    resetBtn.addEventListener('click', (event) => {
-        event.stopPropagation();
-        const checkboxes = filterMenu.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach(cb => cb.checked = false);
-    });
-
-    window.addEventListener('load', () => {
-        const checkboxes = filterMenu.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach(cb => cb.checked = false);
-    });
-
-    filterForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-        const selectedGenres = formData.getAll('genre');
-        const selectedCountries = formData.getAll('country');
-        const selectedYears = formData.getAll('released');
-
-        fetch('/recommend', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                genres: selectedGenres,
-                countries: selectedCountries,
-                released: selectedYears,
-            }),
-        })
-        .then(res => res.json())
-        .then(data => {
-            console.log('Recommendations:', data);
-        })
-        .catch(err => {
-            console.error('Error fetching recommendations:', err);
+    if (filterBtn && filterMenu) {
+        filterBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            filterMenu.classList.toggle('show');
         });
-    });
+
+        filterMenu.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+
+        document.addEventListener('click', () => {
+            filterMenu.classList.remove('show');
+        });
+
+        resetBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const checkboxes = filterMenu.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = false);
+        });
+
+        window.addEventListener('load', () => {
+            const checkboxes = filterMenu.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = false);
+        });
+    }
+
+    if (filterForm) {
+        filterForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const selectedGenres = formData.getAll('genre');
+            const selectedCountries = formData.getAll('country');
+            const selectedYears = formData.getAll('released');
+
+            fetch('/recommend', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    genres: selectedGenres,
+                    countries: selectedCountries,
+                    released: selectedYears,
+                }),
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log('Recommendations:', data);
+            })
+            .catch(err => {
+                console.error('Error fetching recommendations:', err);
+            });
+        });
+    }
 
     // --- Search Logic & UI References ---
     const searchInput = document.querySelector('.searchInput');
@@ -99,13 +103,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function performSearch() {
         const title = searchInput.value.trim();
         if (!title) {
-            alert("Please enter a movie title.");
-            return;
+            return; // Don't even alert, just do nothing if empty
         }
 
         showLoadingForTwoSeconds();
 
-        const url = `/smart_recommend?title=${encodeURIComponent(title)}&limit=10`;
+        // 🚨 CHANGED TO 18 HERE 🚨
+        const url = `/smart_recommend?title=${encodeURIComponent(title)}&limit=20`;
 
         fetch(url)
             .then(res => {
@@ -125,13 +129,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (scrollRightBtn) scrollRightBtn.setAttribute('style', 'display: none !important');
 
                 if (data.results && data.results.length > 0) {
-                    // ✅ SUCCESS: Show Header
+                    // ✅ SUCCESS: Show Header & Movies
                     if (resultsHeader) resultsHeader.classList.add('show-results');
                     
-                    // ✅ FIX: Check current view state before showing arrows
                     const isGridView = resultsContainer.classList.contains('grid-view');
 
-                    // ✅ SUCCESS: Set Transparent Arrow Symbols and Show ONLY if NOT in grid view
                     if (scrollLeftBtn) {
                         scrollLeftBtn.innerHTML = '&lt;'; 
                         if (!isGridView) scrollLeftBtn.setAttribute('style', 'display: flex !important');
@@ -143,16 +145,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         scrollRightBtn.onclick = () => resultsContainer.scrollBy({ left: 500, behavior: 'smooth' });
                     }
 
-                    data.results.forEach((movie, index) => {
+                    data.results.forEach((movie) => {
                         const card = document.createElement('div');
-                        card.className = `movie-card ${index === 0 ? 'selected-movie' : ''}`;
-
-                        if (index === 0) {
-                            const badge = document.createElement('div');
-                            badge.className = 'selected-badge';
-                            badge.textContent = 'Selected';
-                            card.appendChild(badge);
-                        }
+                        card.className = 'movie-card'; 
 
                         const img = document.createElement('img');
                         img.className = 'movie-poster';
@@ -189,28 +184,43 @@ document.addEventListener('DOMContentLoaded', () => {
                                 fetch(`/movie_detail?title=${encodeURIComponent(movie.title)}`)
                                     .then(res => res.text())
                                     .then(html => { content.innerHTML = html; })
-                                    .catch(() => { content.innerHTML = 'Failed to load details.'; });
+                                    .catch(() => { content.innerHTML = '<div style="color:white;text-align:center;">Failed to load details.</div>'; });
                             }
                         };
                         resultsContainer.appendChild(card);
                     });
                 } else {
-                    alert(data.error || data.message || "No results found.");
+                    // ✅ NO RESULTS
+                    resultsContainer.innerHTML = `
+                        <div style="width: 100%; text-align: center; padding: 50px 20px; grid-column: 1 / -1;">
+                            <h3 style="font-family: 'Poppins', sans-serif; font-size: 1.5rem; color: #333; margin-bottom: 10px;">Movie not found</h3>
+                            <p style="color: #666; font-size: 1rem;">Please check your spelling and try again.</p>
+                        </div>
+                    `;
                 }
             })
             .catch(err => {
                 console.error("Fetch error:", err);
-                alert("Server error. Try again later.");
+                // ✅ SERVER ERROR (Now also says Movie not found)
+                resultsContainer.innerHTML = `
+                    <div style="width: 100%; text-align: center; padding: 50px 20px; grid-column: 1 / -1;">
+                        <h3 style="font-family: 'Poppins', sans-serif; font-size: 1.5rem; color: #333; margin-bottom: 10px;">Movie not found</h3>
+                        <p style="color: #666; font-size: 1rem;">Please check your spelling and try again.</p>
+                    </div>
+                `;
             });
     }
 
-    searchBtn.addEventListener('click', performSearch);
-    searchInput.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            performSearch();
-        }
-    });
+    if (searchBtn) searchBtn.addEventListener('click', performSearch);
+    
+    if (searchInput) {
+        searchInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                performSearch();
+            }
+        });
+    }
 
     document.addEventListener('click', function (e) {
         if (e.target.classList.contains('close-popup')) {

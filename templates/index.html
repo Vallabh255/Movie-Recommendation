@@ -1,49 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MovieRec</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>MovieRec</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="title">MovieRec</div>
 
     <div class="searchBar">
-        <button class="filterbtn">
-            <img src="{{ url_for('static', filename='icons/tune_37dp_E3E3E3_FILL0_wght400_GRAD0_opsz40.svg') }}" alt="Filter Icon" />
+        <button class="filterbtn" id="filterToggleBtn">
+            <img src="{{ url_for('static', filename='icons/tune_37dp_E3E3E3_FILL0_wght400_GRAD0_opsz40.svg') }}" alt="Filter" />
         </button>
-        <input type="text" class="searchInput" placeholder="Search" />
+        <input type="text" class="searchInput" placeholder="Search for a movie..." />
         <button class="okbtn">
-            <img src="{{ url_for('static', filename='icons/search_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg') }}" alt="search icon"/>
+            <img src="{{ url_for('static', filename='icons/search_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg') }}" alt="Search"/>
         </button>
 
         <div class="filter-menu" id="filterMenu">
             <form id="filterForm">
-                <div class="filter-left-column">
-                    <fieldset class="filter-section filter-released">
+                <div class="filter-options">
+                    <fieldset class="filter-section">
                         <legend>Released:</legend>
                         <label><input type="checkbox" name="released" value="All" checked> All</label>
                         <label><input type="checkbox" name="released" value="2020s"> 2020s</label>
                         <label><input type="checkbox" name="released" value="2010s"> 2010s</label>
-                        <label><input type="checkbox" name="released" value="2000s"> 2000s</label>
-                        <label><input type="checkbox" name="released" value="1990s"> 1990s</label>
                     </fieldset>
-                    <fieldset class="filter-section filter-content-rating">
-                        <legend>Content Rating</legend>
+                    <fieldset class="filter-section">
+                        <legend>Rating</legend>
                         <label><input type="checkbox" name="rating" value="yes18" checked>Mature</label>
                         <label><input type="checkbox" name="rating" value="no18">General</label>
                     </fieldset>
                 </div>
-                <fieldset class="filter-section filter-genres">
-                    <legend>Genre:</legend>
-                    <label><input type="checkbox" name="genre" value="Action"> Action</label>
-                    <label><input type="checkbox" name="genre" value="Comedy"> Comedy</label>
-                    <label><input type="checkbox" name="genre" value="Drama"> Drama</label>
-                    <label><input type="checkbox" name="genre" value="Horror"> Horror</label>
-                </fieldset>
                 <div class="filter-actions">
                     <button id="applyFilters" class="action-btn">Filter</button>
                     <button id="resetFilters" type="button" class="action-btn reset-btn">Reset</button>
@@ -59,9 +50,7 @@
 
     <div class="results-wrapper">
         <button id="scrollLeft" class="scroll-arrow">&lt;</button>
-        <div class="scroll-shield">
-            <div id="results" class="results-container horizontal-scroll"></div>
-        </div>
+        <div id="results" class="results-container horizontal-scroll"></div>
         <button id="scrollRight" class="scroll-arrow">&gt;</button>
     </div>
 
@@ -71,6 +60,7 @@
             <div id="movieDetailContent">Loading...</div>
         </div>
     </div>
+
     <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(255,255,255,0.7); z-index:9999; align-items:center; justify-content:center;">
         <div class="spinner"></div>
     </div>
