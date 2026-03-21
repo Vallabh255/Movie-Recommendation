@@ -231,65 +231,73 @@ body {
 
 /* ========================= MOVIE CARDS ======================== */
 .results-container {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    /* This creates a responsive grid that fills the space evenly */
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px; /* Reduced gap for a tighter look */
+    padding: 20px 5%;
     justify-content: center;
-    gap: 24px;
-    padding: 1rem 2rem;
 }
 
 .movie-card {
-    position: relative;
-    background: #fff;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 1rem;
-    width: 220px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease;
+    position: relative; /* Crucial for the badge positioning */
+    background: transparent;
+    border: none;
+    width: 100%; /* Let the grid control the width */
+    max-width: 200px; /* Prevents cards from getting too huge on big screens */
+    transition: transform 0.3s ease;
     cursor: pointer;
     display: flex;
     flex-direction: column;
 }
 
 .movie-card:hover {
-    transform: scale(1.02);
+    transform: translateY(-10px); /* Lift effect instead of just scaling */
 }
 
 .movie-card img {
     width: 100%;
-    border-radius: 8px;
+    aspect-ratio: 2/3;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-.overview {
+.movie-card h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #333;
+    margin-top: 10px;
+    text-align: left;
+    /* Helps with long titles */
     display: -webkit-box;
-    -webkit-line-clamp: 5;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.5em;
-    max-height: 7.5em;
-    white-space: normal;
-    word-break: break-word;
 }
 
+/* ========================= SELECTED STATE FIX ======================== */
 .selected-movie {
-    border: 2px solid #FF0066;
-    box-shadow: 0 0 8px rgba(255, 0, 102, 0.3);
-    border-radius: 10px;
+    /* We apply the border to a wrapper or handle it via a pseudo-element 
+       to prevent it from shifting the card position */
+    outline: 3px solid #FF0066;
+    outline-offset: 5px;
+    border-radius: 12px;
 }
 
 .selected-badge {
     position: absolute;
-    top: 8px;
-    left: 8px;
+    top: -10px; /* Moves it slightly above the card */
+    left: 10px;
     background-color: #FF0066;
     color: white;
-    padding: 2px 8px;
-    font-size: 0.75rem;
+    padding: 2px 10px;
+    font-size: 0.7rem;
     font-weight: bold;
-    border-radius: 6px;
-    z-index: 2;
+    border-radius: 4px;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 /* ========================= ADULT BADGES ======================== */
