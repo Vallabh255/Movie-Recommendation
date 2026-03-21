@@ -9,40 +9,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="title">MovieRec</div>
+    
+    <div class="hero-section">
+        <div class="title" style="font-size: 1.5rem; margin-bottom: 20px; padding-top: 20px; color: #ef4444;">MovieRec</div>
+        
+        <h1 class="main-title">Find your next favorite</h1>
+        <p class="subtitle">Describe a movie, mood, or pick a film you loved</p>
 
-    <div class="searchBar">
-        <button class="filterbtn" id="filterToggleBtn">
-            <img src="{{ url_for('static', filename='icons/tune_37dp_E3E3E3_FILL0_wght400_GRAD0_opsz40.svg') }}" alt="Filter" />
-        </button>
-        <input type="text" class="searchInput" placeholder="Search for a movie..." />
-        <button class="okbtn">
-            <img src="{{ url_for('static', filename='icons/search_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg') }}" alt="Search"/>
-        </button>
+        <div class="search-container">
+            <svg class="search-icon-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            
+            <input type="text" class="searchInput" placeholder='e.g. "Interstellar" or "mind-bending thriller"' />
+            
+            <button class="search-text-btn okbtn">Search</button>
+        </div>
 
-        <div class="filter-menu" id="filterMenu">
-            <form id="filterForm">
-                <div class="filter-options">
-                    <fieldset class="filter-section">
-                        <legend>Released:</legend>
-                        <label><input type="checkbox" name="released" value="All" checked> All</label>
-                        <label><input type="checkbox" name="released" value="2020s"> 2020s</label>
-                        <label><input type="checkbox" name="released" value="2010s"> 2010s</label>
-                    </fieldset>
-                    <fieldset class="filter-section">
-                        <legend>Rating</legend>
-                        <label><input type="checkbox" name="rating" value="yes18" checked>Mature</label>
-                        <label><input type="checkbox" name="rating" value="no18">General</label>
-                    </fieldset>
-                </div>
-                <div class="filter-actions">
-                    <button id="applyFilters" class="action-btn">Filter</button>
-                    <button id="resetFilters" type="button" class="action-btn reset-btn">Reset</button>
-                </div>
-            </form>
+        <div class="genre-tags">
+            <button class="tag active">All</button>
+            <button class="tag">Sci-Fi</button>
+            <button class="tag">Thriller</button>
+            <button class="tag">Drama</button>
+            <button class="tag">Action</button>
+            <button class="tag">Comedy</button>
         </div>
     </div>
-
     <div class="results-header">
         <h2 id="resultsTitle">Recommendations</h2>
         <button id="viewAllBtn" class="view-all-btn">View All</button>
@@ -61,7 +54,7 @@
         </div>
     </div>
 
-    <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(255,255,255,0.7); z-index:9999; align-items:center; justify-content:center;">
+    <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(11, 15, 25, 0.85); z-index:9999; align-items:center; justify-content:center;">
         <div class="spinner"></div>
     </div>
 </body>

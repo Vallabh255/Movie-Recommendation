@@ -1,50 +1,118 @@
-/* ========================= 1. BASE STYLES ======================== */
+/* ========================= 1. BASE STYLES & HERO ======================== */
 body {
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
     margin: 0; padding: 0;
-    background-color: #f0f2f5;
+    background-color: #0f172a; /* Dark Navy Background */
+    color: #f8fafc; /* Added light text color */
     overflow-x: hidden; 
 }
 
-.title {
-    font-family: 'Poppins', sans-serif;
-    font-size: 50px; color: #333;
-    display: flex; justify-content: center; align-items: center;
-    font-weight: 800; padding-top: 50px;
+.hero-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 40px;
+    margin-bottom: 20px;
 }
 
-/* ========================= 2. SEARCH BAR ======================== */
-.searchBar {
-    position: relative; display: flex; align-items: center; justify-content: space-between;
-    margin: 20px auto; background: white; border-radius: 30px;
-    width: 80%; max-width: 600px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    padding: 5px 20px; z-index: 2000;
+.main-title {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 3rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 10px 0;
+    letter-spacing: -1px;
+    text-align: center;
 }
 
-.searchInput { flex: 1; border: none; outline: none; padding: 10px; font-size: 1rem; color: #333; }
-.filterbtn, .okbtn { background: none; border: none; cursor: pointer; display: flex; align-items: center; padding: 5px; }
-
-/* Clean Filter Menu */
-.filter-menu {
-    position: absolute; top: 110%; left: 50%; transform: translateX(-50%);
-    background: white; padding: 25px; border-radius: 15px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.25); z-index: 2100;
-    width: 90vw; max-width: 400px; display: none; 
+.subtitle {
+    font-size: 1.1rem;
+    color: #9ca3af;
+    margin: 0 0 30px 0;
+    text-align: center;
 }
-.filter-menu.show { display: block; }
 
-#filterForm { display: grid; gap: 15px; }
-.filter-options { display: flex; gap: 15px; }
-.filter-section { border: 1px solid #ddd; border-radius: 8px; flex: 1; }
-.filter-section legend { padding: 0 10px; font-weight: 600; color: #555; }
-.filter-section label { display: block; padding: 5px 10px; cursor: pointer; font-size: 0.9rem; color: #333; }
+/* ========================= 2. SEARCH BAR & TAGS ======================== */
+.search-container {
+    display: flex;
+    align-items: center;
+    background: #1e293b; /* Dark gray inner background */
+    border: 1px solid #334155; 
+    border-radius: 12px; 
+    width: 90%;
+    max-width: 650px;
+    padding: 6px 6px 6px 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5); /* Stronger shadow */
+}
 
-.filter-actions { display: flex; gap: 10px; margin-top: 10px; }
-.action-btn { flex: 1; padding: 10px; border-radius: 20px; border: none; font-weight: 600; cursor: pointer; transition: background 0.3s; }
-#applyFilters { background: #333; color: white; }
-#applyFilters:hover { background: #1a1a1a; }
-.reset-btn { background: #e0e0e0; color: #555; }
-.reset-btn:hover { background: #d0d0d0; }
+.search-icon-left {
+    width: 20px;
+    height: 20px;
+    color: #9ca3af;
+    margin-right: 10px;
+}
+
+.searchInput {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #ffffff;
+    font-size: 1.05rem;
+    padding: 10px 0;
+}
+
+.searchInput::placeholder {
+    color: #6b7280;
+}
+
+.search-text-btn {
+    background: #334155;
+    color: #ffffff;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.search-text-btn:hover {
+    background: #475569;
+}
+
+/* Genre Tags Below Search */
+.genre-tags {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    background: transparent;
+    border: 1px solid #334155;
+    color: #cbd5e1;
+    padding: 8px 20px;
+    border-radius: 30px; 
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tag:hover {
+    background: #1e293b;
+    border-color: #475569;
+}
+
+/* The Active (Red) Tag */
+.tag.active {
+    color: #ef4444; /* Red text */
+    border-color: #ef4444; /* Red border */
+    background: rgba(239, 68, 68, 0.05); /* Faint red background */
+}
 
 /* ========================= 3. RESULTS HEADER ======================== */
 .results-header {
@@ -52,15 +120,15 @@ body {
     padding: 0 5%; margin: 50px 0 10px 0; /* Clear gap above results */
 }
 .results-header.show-results { display: flex !important; }
-.results-header h2 { font-family: 'Poppins', sans-serif; color: #333; margin: 0; }
+.results-header h2 { font-family: 'Poppins', sans-serif; color: #ffffff; margin: 0; }
 
 /* Neutralized Button (No Red) */
 .view-all-btn {
-    background: #333; color: white; border: none;
+    background: #1e293b; color: white; border: none;
     padding: 10px 25px; border-radius: 25px; font-weight: 600;
     cursor: pointer; transition: background 0.3s;
 }
-.view-all-btn:hover { background: #1a1a1a; }
+.view-all-btn:hover { background: #334155; }
 
 /* ========================= 4. MOVIE CARDS (CLEAN ROW) ======================== */
 .results-wrapper {
@@ -91,7 +159,7 @@ body {
     aspect-ratio: 2/3; 
     object-fit: cover;
     border-radius: 12px; 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5); /* Stronger shadow */
     display: block; /* Removes invisible spacing under the image */
 }
 
@@ -99,11 +167,9 @@ body {
     font-family: 'Poppins', sans-serif; 
     font-size: 0.85rem;
     margin-top: 10px; 
-    color: #333; 
+    color: #cbd5e1; /* Light gray text */
     text-align: center;
 }
-
-/* SECTION 5 (SELECTED STATE) & SECTION 6 (GUTTER FIX) ARE REMOVED entirely */
 
 /* ========================= 5. SLIDER & GRID STATES (SCROLLBAR NUKED) ======================== */
 .results-container.horizontal-scroll {
@@ -113,12 +179,10 @@ body {
     justify-content: flex-start;
     gap: 12px; 
     padding: 15px 0; 
-    /* 🚨 THE FIX: Completely hides the "bar below" in Firefox, IE, and Edge */
     scrollbar-width: none !important; 
     -ms-overflow-style: none !important; 
 }
 
-/* 🚨 THE FIX: Completely hides the scrollbar "bar" in Chrome, Safari, and newer Edge */
 .results-container.horizontal-scroll::-webkit-scrollbar { 
     display: none !important; 
     width: 0 !important;
@@ -128,7 +192,7 @@ body {
 }
 
 .results-container.horizontal-scroll::-webkit-scrollbar-button {
-    display: none !important; /* Hides the native left/right scrollbar arrows */
+    display: none !important; 
 }
 
 .results-container.grid-view {
@@ -149,7 +213,7 @@ body {
     border: none; 
     cursor: pointer;
     z-index: 100; 
-    color: #333; /* Dark monochrome color */
+    color: #ffffff; /* White arrows */
     opacity: 1; /* Restored to fully solid so you can see them clearly */
     font-size: 4rem; 
     font-weight: bold; 
@@ -158,7 +222,7 @@ body {
 }
 
 .scroll-arrow:hover { 
-    color: #555; 
+    color: #cbd5e1; /* Light gray on hover */
 }
 
 #scrollLeft { left: 10px; } 
@@ -174,9 +238,9 @@ body {
 }
 .hidden { display: none !important; }
 
-/* Monopoly-Style Spinner (No Red) */
+/* Spinner matching dark mode */
 .spinner {
-    border: 4px solid rgba(0,0,0,0.1); border-top: 4px solid #333;
+    border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid #ffffff;
     border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
