@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     
-    // --- Search Logic & UI References ---
+    // --- UI References ---
     const searchInput = document.querySelector('.searchInput');
     const searchBtn = document.querySelector('.okbtn');
     const loadingOverlay = document.getElementById('loadingOverlay');
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- View All Toggle Logic ---
+    // --- View All / Grid Toggle ---
     if (viewAllBtn) {
         viewAllBtn.addEventListener('click', () => {
             resultsContainer.classList.toggle('horizontal-scroll');
@@ -28,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const isGridView = resultsContainer.classList.contains('grid-view');
             viewAllBtn.textContent = isGridView ? 'Show Less' : 'View All';
             
-            // Hide arrows when Grid View is active
             const arrows = [scrollLeftBtn, scrollRightBtn];
             arrows.forEach(arrow => {
                 if (arrow) {
@@ -42,48 +41,39 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Perform Search ---
+    // --- Search Logic ---
     function performSearch() {
         const title = searchInput.value.trim();
-        if (!title) {
-            return; // Don't search if the box is empty
-        }
+        if (!title) return;
 
         showLoadingForTwoSeconds();
 
-        // 🚨 Fetch URL reverted to purely grab 18 movies based on the title
         const url = `/smart_recommend?title=${encodeURIComponent(title)}&limit=18`;
 
         fetch(url)
             .then(res => {
-                if (!res.ok) {
-                    return res.json().then(err => {
-                        throw new Error(err.error || "An unexpected error occurred.");
-                    });
-                }
+                if (!res.ok) throw new Error("Search failed.");
                 return res.json();
             })
             .then(data => {
                 resultsContainer.innerHTML = '';
                 
-                // Hide UI elements initially
                 if (resultsHeader) resultsHeader.classList.remove('show-results');
                 if (scrollLeftBtn) scrollLeftBtn.setAttribute('style', 'display: none !important');
                 if (scrollRightBtn) scrollRightBtn.setAttribute('style', 'display: none !important');
 
                 if (data.results && data.results.length > 0) {
-                    // ✅ SUCCESS: Show Header & Movies
                     if (resultsHeader) resultsHeader.classList.add('show-results');
                     
                     const isGridView = resultsContainer.classList.contains('grid-view');
 
                     if (scrollLeftBtn) {
-                        scrollLeftBtn.innerHTML = '&lt;'; 
+                        scrollLeftBtn.innerHTML = '‹'; 
                         if (!isGridView) scrollLeftBtn.setAttribute('style', 'display: flex !important');
                         scrollLeftBtn.onclick = () => resultsContainer.scrollBy({ left: -500, behavior: 'smooth' });
                     }
                     if (scrollRightBtn) {
-                        scrollRightBtn.innerHTML = '&gt;'; 
+                        scrollRightBtn.innerHTML = '›'; 
                         if (!isGridView) scrollRightBtn.setAttribute('style', 'display: flex !important');
                         scrollRightBtn.onclick = () => resultsContainer.scrollBy({ left: 500, behavior: 'smooth' });
                     }
@@ -92,83 +82,71 @@ document.addEventListener('DOMContentLoaded', () => {
                         const card = document.createElement('div');
                         card.className = 'movie-card'; 
 
+                        const posterPath = movie.poster_path 
+                            ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` 
+                            : '/static/icons/fallback.svg';
+
                         const img = document.createElement('img');
                         img.className = 'movie-poster';
-                        img.src = `https://image.tmdb.org/t/p/w500${movie.poster_path || ''}`;
-                        img.alt = movie.title || 'Poster';
-                        img.onerror = function () {
-                            this.onerror = null;
-                            this.src = '/static/icons/fallback.svg';
-                        };
-
-                        if (movie.adult) {
-                            img.style.display = 'none';
-                            const blackOverlay = document.createElement('div');
-                            blackOverlay.className = 'black-overlay';
-                            const badge18 = document.createElement('div');
-                            badge18.className = 'badge-18';
-                            badge18.textContent = '18+';
-                            blackOverlay.appendChild(badge18);
-                            card.appendChild(blackOverlay);
-                        } else {
-                            card.appendChild(img);
-                        }
+                        img.src = posterPath;
+                        img.alt = movie.title;
+                        img.onerror = function() { this.src = 'https://via.placeholder.com/500x750/0d1117/facc15?text=No+Poster'; };
+                        
+                        card.appendChild(img);
 
                         const movieTitle = document.createElement('h3');
-                        movieTitle.textContent = movie.title || 'Untitled Movie';
+                        movieTitle.className = 'base-title';
+                        movieTitle.textContent = movie.title;
                         card.appendChild(movieTitle);
 
-                        card.onclick = () => {
-                            const overlay = document.getElementById('movieOverlay');
-                            const content = document.getElementById('movieDetailContent');
-                            if (overlay && content) {
-                                overlay.classList.remove('hidden');
-                                content.innerHTML = '<div class="spinner"></div>';
-                                fetch(`/movie_detail?title=${encodeURIComponent(movie.title)}`)
-                                    .then(res => res.text())
-                                    .then(html => { content.innerHTML = html; })
-                                    .catch(() => { content.innerHTML = '<div style="color:white;text-align:center;">Failed to load details.</div>'; });
-                            }
-                        };
+                        const hoverCard = document.createElement('div');
+                        hoverCard.className = 'movie-hover-card';
+                        
+                        const year = movie.release_date ? movie.release_date.split('-')[0] : 'N/A';
+                        const rating = movie.adult ? '18+' : 'U/A 13+';
+                        const overview = movie.overview ? (movie.overview.length > 120 ? movie.overview.substring(0, 120) + '...' : movie.overview) : 'No description available.';
+                        
+                        const backdropSrc = movie.backdrop_path 
+                            ? `https://image.tmdb.org/t/p/w780${movie.backdrop_path}` 
+                            : posterPath;
+
+                        hoverCard.innerHTML = `
+                            <div class="hc-image-container">
+                                <img src="${backdropSrc}" class="hc-backdrop" alt="${movie.title}" 
+                                     onerror="this.src='https://via.placeholder.com/780x440/161b22/8b949e?text=${encodeURIComponent(movie.title)}'">
+                                <div class="hc-gradient"></div>
+                                <h4 class="hc-title">${movie.title}</h4>
+                            </div>
+                            <div class="hc-content">
+                                <div class="hc-meta">
+                                    <span>${year}</span> <span class="dot">•</span> <span>${rating}</span> <span class="dot">•</span> <span>Movie</span>
+                                </div>
+                                <p class="hc-desc">${overview}</p>
+                            </div>
+                        `;
+
+                        // 🚨 CLICK LOGIC REMOVED 🚨
+                        card.appendChild(hoverCard);
                         resultsContainer.appendChild(card);
                     });
                 } else {
-                    // ✅ NO RESULTS
-                    resultsContainer.innerHTML = `
-                        <div style="width: 100%; text-align: center; padding: 50px 20px; grid-column: 1 / -1;">
-                            <h3 style="font-family: 'Poppins', sans-serif; font-size: 1.5rem; color: #ffffff; margin-bottom: 10px;">Movie not found</h3>
-                            <p style="color: #9ca3af; font-size: 1rem;">Please check your spelling and try again.</p>
-                        </div>
-                    `;
+                    resultsContainer.innerHTML = `<div class="no-results"><h3>Movie not found</h3></div>`;
                 }
             })
             .catch(err => {
-                console.error("Fetch error:", err);
-                // ✅ SERVER ERROR
-                resultsContainer.innerHTML = `
-                    <div style="width: 100%; text-align: center; padding: 50px 20px; grid-column: 1 / -1;">
-                        <h3 style="font-family: 'Poppins', sans-serif; font-size: 1.5rem; color: #ffffff; margin-bottom: 10px;">Movie not found</h3>
-                        <p style="color: #9ca3af; font-size: 1rem;">Please check your spelling and try again.</p>
-                    </div>
-                `;
+                resultsContainer.innerHTML = `<div class="no-results"><h3>Connection Error</h3></div>`;
             });
     }
 
     if (searchBtn) searchBtn.addEventListener('click', performSearch);
-    
     if (searchInput) {
-        searchInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                performSearch();
-            }
-        });
+        searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') performSearch(); });
     }
 
-    document.addEventListener('click', function (e) {
+    // Close logic kept in case you have other popups, but cards won't trigger it anymore.
+    document.addEventListener('click', (e) => {
         if (e.target.classList.contains('close-popup')) {
-            const overlay = document.getElementById('movieOverlay');
-            if (overlay) overlay.classList.add('hidden');
+            document.getElementById('movieOverlay').classList.add('hidden');
         }
     });
 });
