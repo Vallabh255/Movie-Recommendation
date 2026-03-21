@@ -1,63 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const filterBtn = document.querySelector('.filterbtn');
-    const filterMenu = document.getElementById('filterMenu');
-    const resetBtn = document.getElementById('resetFilters');
-    const filterForm = document.getElementById('filterForm');
-
-    // --- Filter Menu Logic ---
-    if (filterBtn && filterMenu) {
-        filterBtn.addEventListener('click', (event) => {
-            event.stopPropagation();
-            filterMenu.classList.toggle('show');
-        });
-
-        filterMenu.addEventListener('click', (event) => {
-            event.stopPropagation();
-        });
-
-        document.addEventListener('click', () => {
-            filterMenu.classList.remove('show');
-        });
-
-        resetBtn.addEventListener('click', (event) => {
-            event.stopPropagation();
-            const checkboxes = filterMenu.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(cb => cb.checked = false);
-        });
-
-        window.addEventListener('load', () => {
-            const checkboxes = filterMenu.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(cb => cb.checked = false);
-        });
-    }
-
-    if (filterForm) {
-        filterForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            const selectedGenres = formData.getAll('genre');
-            const selectedCountries = formData.getAll('country');
-            const selectedYears = formData.getAll('released');
-
-            fetch('/recommend', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    genres: selectedGenres,
-                    countries: selectedCountries,
-                    released: selectedYears,
-                }),
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log('Recommendations:', data);
-            })
-            .catch(err => {
-                console.error('Error fetching recommendations:', err);
-            });
-        });
-    }
-
+    
     // --- Search Logic & UI References ---
     const searchInput = document.querySelector('.searchInput');
     const searchBtn = document.querySelector('.okbtn');
@@ -100,16 +42,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- Perform Search ---
     function performSearch() {
         const title = searchInput.value.trim();
         if (!title) {
-            return; // Don't even alert, just do nothing if empty
+            return; // Don't search if the box is empty
         }
 
         showLoadingForTwoSeconds();
 
-        // 🚨 CHANGED TO 18 HERE 🚨
-        const url = `/smart_recommend?title=${encodeURIComponent(title)}&limit=20`;
+        // 🚨 Fetch URL reverted to purely grab 18 movies based on the title
+        const url = `/smart_recommend?title=${encodeURIComponent(title)}&limit=18`;
 
         fetch(url)
             .then(res => {
@@ -193,19 +136,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     // ✅ NO RESULTS
                     resultsContainer.innerHTML = `
                         <div style="width: 100%; text-align: center; padding: 50px 20px; grid-column: 1 / -1;">
-                            <h3 style="font-family: 'Poppins', sans-serif; font-size: 1.5rem; color: #333; margin-bottom: 10px;">Movie not found</h3>
-                            <p style="color: #666; font-size: 1rem;">Please check your spelling and try again.</p>
+                            <h3 style="font-family: 'Poppins', sans-serif; font-size: 1.5rem; color: #ffffff; margin-bottom: 10px;">Movie not found</h3>
+                            <p style="color: #9ca3af; font-size: 1rem;">Please check your spelling and try again.</p>
                         </div>
                     `;
                 }
             })
             .catch(err => {
                 console.error("Fetch error:", err);
-                // ✅ SERVER ERROR (Now also says Movie not found)
+                // ✅ SERVER ERROR
                 resultsContainer.innerHTML = `
                     <div style="width: 100%; text-align: center; padding: 50px 20px; grid-column: 1 / -1;">
-                        <h3 style="font-family: 'Poppins', sans-serif; font-size: 1.5rem; color: #333; margin-bottom: 10px;">Movie not found</h3>
-                        <p style="color: #666; font-size: 1rem;">Please check your spelling and try again.</p>
+                        <h3 style="font-family: 'Poppins', sans-serif; font-size: 1.5rem; color: #ffffff; margin-bottom: 10px;">Movie not found</h3>
+                        <p style="color: #9ca3af; font-size: 1rem;">Please check your spelling and try again.</p>
                     </div>
                 `;
             });

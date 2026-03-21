@@ -3,17 +3,32 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>MovieRec</title>
+    <title>PopcornPal</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="{{ url_for('static', filename='script.js') }}"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
     
     <div class="hero-section">
-        <div class="title" style="font-size: 1.5rem; margin-bottom: 20px; padding-top: 20px; color: #ef4444;">MovieRec</div>
         
-        <h1 class="main-title">Find your next favorite</h1>
+        <div class="logo-container">
+            <svg class="popcorn-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="10"></circle>
+                <circle cx="12" cy="12" r="4"></circle>
+                <circle cx="12" cy="12" r="1" fill="currentColor"></circle>
+                <circle cx="12" cy="5" r="1"></circle>
+                <circle cx="12" cy="19" r="1"></circle>
+                <circle cx="5" cy="12" r="1"></circle>
+                <circle cx="19" cy="12" r="1"></circle>
+                <circle cx="7" cy="7" r="1"></circle>
+                <circle cx="17" cy="17" r="1"></circle>
+                <circle cx="17" cy="7" r="1"></circle>
+                <circle cx="7" cy="17" r="1"></circle>
+            </svg>
+            <h1 class="main-title">PopcornPal</h1>
+        </div>
+
         <p class="subtitle">Describe a movie, mood, or pick a film you loved</p>
 
         <div class="search-container">
@@ -25,15 +40,6 @@
             <input type="text" class="searchInput" placeholder='e.g. "Interstellar" or "mind-bending thriller"' />
             
             <button class="search-text-btn okbtn">Search</button>
-        </div>
-
-        <div class="genre-tags">
-            <button class="tag active">All</button>
-            <button class="tag">Sci-Fi</button>
-            <button class="tag">Thriller</button>
-            <button class="tag">Drama</button>
-            <button class="tag">Action</button>
-            <button class="tag">Comedy</button>
         </div>
     </div>
     <div class="results-header">

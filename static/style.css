@@ -2,8 +2,8 @@
 body {
     font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
     margin: 0; padding: 0;
-    background-color: #0f172a; /* Dark Navy Background */
-    color: #f8fafc; /* Added light text color */
+    background-color: #0d1117; /* Even darker, richer navy/black */
+    color: #f8fafc; 
     overflow-x: hidden; 
 }
 
@@ -11,45 +11,58 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 40px;
-    margin-bottom: 20px;
+    padding-top: 80px; /* Pushed down slightly for better centering */
+    margin-bottom: 40px;
+}
+
+/* Logo Layout */
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.popcorn-logo {
+    width: 48px;
+    height: 48px;
+    color: #facc15; /* Elegant Gold */
 }
 
 .main-title {
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 3rem;
-    font-weight: 800;
-    color: #ffffff;
-    margin: 0 0 10px 0;
-    letter-spacing: -1px;
-    text-align: center;
+    font-family: 'Georgia', 'Times New Roman', serif; /* Classic serif font */
+    font-size: 3.5rem;
+    font-weight: normal;
+    color: #facc15; /* Elegant Gold */
+    margin: 0;
+    letter-spacing: 1px;
 }
 
 .subtitle {
+    font-family: 'Segoe UI', sans-serif;
     font-size: 1.1rem;
-    color: #9ca3af;
-    margin: 0 0 30px 0;
+    color: #8b949e; /* Subdued gray-blue */
+    margin: 0 0 40px 0;
     text-align: center;
 }
 
-/* ========================= 2. SEARCH BAR & TAGS ======================== */
+/* ========================= 2. SEARCH BAR ======================== */
 .search-container {
     display: flex;
     align-items: center;
-    background: #1e293b; /* Dark gray inner background */
-    border: 1px solid #334155; 
-    border-radius: 12px; 
+    background: #161b22; /* Darker input background */
+    border: 1px solid rgba(250, 204, 21, 0.3); /* Faint gold border */
+    border-radius: 40px; /* Full pill shape */
     width: 90%;
     max-width: 650px;
-    padding: 6px 6px 6px 16px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5); /* Stronger shadow */
+    padding: 6px 6px 6px 20px;
 }
 
 .search-icon-left {
     width: 20px;
     height: 20px;
-    color: #9ca3af;
-    margin-right: 10px;
+    color: #facc15; /* Gold search glass */
+    margin-right: 12px;
 }
 
 .searchInput {
@@ -67,88 +80,55 @@ body {
 }
 
 .search-text-btn {
-    background: #334155;
+    background: transparent;
     color: #ffffff;
-    border: 1px solid #475569;
-    border-radius: 8px;
+    border: 1px solid #30363d; /* Subtle dark border */
+    border-radius: 30px; /* Rounded pill button */
     padding: 10px 24px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.2s, border-color 0.2s;
 }
 
 .search-text-btn:hover {
-    background: #475569;
-}
-
-/* Genre Tags Below Search */
-.genre-tags {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-top: 25px;
-    flex-wrap: wrap;
-}
-
-.tag {
-    background: transparent;
-    border: 1px solid #334155;
-    color: #cbd5e1;
-    padding: 8px 20px;
-    border-radius: 30px; 
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.tag:hover {
-    background: #1e293b;
-    border-color: #475569;
-}
-
-/* The Active (Red) Tag */
-.tag.active {
-    color: #ef4444; /* Red text */
-    border-color: #ef4444; /* Red border */
-    background: rgba(239, 68, 68, 0.05); /* Faint red background */
+    background: #21262d;
+    border-color: #8b949e;
 }
 
 /* ========================= 3. RESULTS HEADER ======================== */
 .results-header {
     display: none; justify-content: space-between; align-items: center;
-    padding: 0 5%; margin: 50px 0 10px 0; /* Clear gap above results */
+    padding: 0 5%; margin: 20px 0 10px 0; 
 }
 .results-header.show-results { display: flex !important; }
 .results-header h2 { font-family: 'Poppins', sans-serif; color: #ffffff; margin: 0; }
 
-/* Neutralized Button (No Red) */
 .view-all-btn {
-    background: #1e293b; color: white; border: none;
-    padding: 10px 25px; border-radius: 25px; font-weight: 600;
+    background: #161b22; color: white; border: 1px solid #30363d;
+    padding: 8px 20px; border-radius: 25px; font-weight: 600; font-size: 0.9rem;
     cursor: pointer; transition: background 0.3s;
 }
-.view-all-btn:hover { background: #334155; }
+.view-all-btn:hover { background: #21262d; }
 
-/* ========================= 4. MOVIE CARDS (CLEAN ROW) ======================== */
+/* ========================= 4. MOVIE CARDS ======================== */
 .results-wrapper {
-    position: relative; padding: 0 5%; overflow: visible !important;
+    position: relative; padding: 0; overflow: visible !important;
 }
 
 .movie-card {
     position: relative; 
     flex: 0 0 180px; 
     width: 180px;
-    min-width: 180px; /* THE FIX: Prevents horizontal squishing in the slider */
+    min-width: 180px; 
     max-width: 180px;
     transition: transform 0.3s ease-out; 
     cursor: pointer; 
     z-index: 1;
     display: flex;
-    flex-direction: column; /* Keeps text cleanly under the image */
+    flex-direction: column; 
 }
 
-/* Stable hover effect, no badge clipping possible */
 .movie-card:hover {
     transform: scale(1.05) translateY(-5px);
     z-index: 10;
@@ -159,41 +139,35 @@ body {
     aspect-ratio: 2/3; 
     object-fit: cover;
     border-radius: 12px; 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5); /* Stronger shadow */
-    display: block; /* Removes invisible spacing under the image */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5); 
+    display: block; 
 }
 
 .movie-card h3 {
     font-family: 'Poppins', sans-serif; 
     font-size: 0.85rem;
     margin-top: 10px; 
-    color: #cbd5e1; /* Light gray text */
+    color: #cbd5e1; 
     text-align: center;
 }
 
-/* ========================= 5. SLIDER & GRID STATES (SCROLLBAR NUKED) ======================== */
+/* ========================= 5. SLIDER & GRID STATES ======================== */
 .results-container.horizontal-scroll {
     display: flex; 
     flex-wrap: nowrap; 
     overflow-x: auto;
     justify-content: flex-start;
     gap: 12px; 
-    padding: 15px 0; 
+    padding: 15px 5%; 
     scrollbar-width: none !important; 
     -ms-overflow-style: none !important; 
 }
 
 .results-container.horizontal-scroll::-webkit-scrollbar { 
     display: none !important; 
-    width: 0 !important;
-    height: 0 !important;
-    background: transparent !important;
-    -webkit-appearance: none !important;
+    width: 0 !important; height: 0 !important; background: transparent !important; -webkit-appearance: none !important;
 }
-
-.results-container.horizontal-scroll::-webkit-scrollbar-button {
-    display: none !important; 
-}
+.results-container.horizontal-scroll::-webkit-scrollbar-button { display: none !important; }
 
 .results-container.grid-view {
     display: grid !important; 
@@ -201,36 +175,51 @@ body {
     justify-content: center; 
     column-gap: 12px; 
     row-gap: 40px; 
-    padding: 20px 0; 
+    padding: 20px 5%; 
 }
 
-/* ========================= 6. ARROWS (RESTORED TO SOLID) ======================== */
+/* ========================= 6. ARROWS (FROSTED CIRCLE FIX) ======================== */
 .scroll-arrow {
     position: absolute; 
-    top: 50%; 
+    top: 40%; 
     transform: translateY(-50%);
     background: transparent !important; 
     border: none; 
     cursor: pointer;
     z-index: 100; 
-    color: #ffffff; /* White arrows */
-    opacity: 1; /* Restored to fully solid so you can see them clearly */
-    font-size: 4rem; 
-    font-weight: bold; 
+    color: #ffffff; 
+    opacity: 1; 
     display: none !important; 
     padding: 0;
+    transition: background 0.2s, transform 0.2s; 
+    
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    width: 48px; 
+    height: 48px;
+    border-radius: 50%; 
+    background: rgba(20, 20, 20, 0.6) !important; 
+    backdrop-filter: blur(8px); 
+    -webkit-backdrop-filter: blur(8px); 
+    
+    font-size: 2.2rem; 
+    font-weight: normal; 
+    text-shadow: 0 1px 4px rgba(0,0,0,0.3); 
 }
 
 .scroll-arrow:hover { 
-    color: #cbd5e1; /* Light gray on hover */
+    background: rgba(40, 40, 40, 0.8) !important; 
+    transform: translateY(-50%) scale(1.1); 
 }
 
-#scrollLeft { left: 10px; } 
-#scrollRight { right: 10px; }
+#scrollLeft { left: 15px; } 
+#scrollRight { right: 15px; }
+
 .scroll-arrow.show-results { display: flex !important; }
 .results-container.grid-view ~ .scroll-arrow { display: none !important; }
 
-/* ========================= 7. OVERLAYS & SPINNERS (Mono Fix) ======================== */
+/* ========================= 7. OVERLAYS & SPINNERS ======================== */
 .movie-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center;
@@ -238,9 +227,8 @@ body {
 }
 .hidden { display: none !important; }
 
-/* Spinner matching dark mode */
 .spinner {
-    border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid #ffffff;
+    border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid #facc15; /* Gold spinner */
     border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
