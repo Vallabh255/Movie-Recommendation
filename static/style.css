@@ -1,8 +1,10 @@
+/* ========================= 1. BASE STYLES ======================== */
 body {
     font-family: 'Segoe UI', sans-serif;
     margin: 0;
     padding: 0;
     background-color: #f0f2f5;
+    overflow-x: hidden; 
 }
 
 .title {
@@ -13,23 +15,24 @@ body {
     justify-content: center;
     align-items: center;
     font-weight: 800;
-    padding-top: 5%;
+    padding-top: 50px;
 }
 
+/* ========================= 2. SEARCH BAR & FILTER MENU ======================== */
 .searchBar {
     position: relative;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    margin: 1% auto;
-    background-color: rgb(255, 255, 255);
+    margin: 20px auto;
+    background-color: white;
     border-radius: 30px;
     width: 80%;
     max-width: 600px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     padding: 5px 20px;
-    z-index: 2;
+    z-index: 2000;
 }
 
 .searchInput {
@@ -42,217 +45,97 @@ body {
     padding: 10px;
 }
 
-.filterbtn,
-.okbtn {
+.filterbtn, .okbtn {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0;
-    filter: invert(1);
+    padding: 5px;
+    display: flex;
+    align-items: center;
 }
 
-.filterbtn img,
-.okbtn img {
+.filterbtn img, .okbtn img {
     width: 24px;
     height: 24px;
-    filter: brightness(0) invert(1);
 }
 
-/* ========================= FILTER MENU ======================== */
 .filter-menu {
     position: absolute;
-    top: calc(100% + 15px);
+    top: 110%;
     left: 50%;
     transform: translateX(-50%);
     background: #ffffff;
     color: #333;
-    padding: 20px 25px;
-    border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    z-index: 2100;
     width: 90vw;
-    max-width: 1400px;
-    box-sizing: border-box;
-
+    max-width: 1000px;
+    display: none; 
     opacity: 0;
-    visibility: hidden;
-    transform: translateY(-20px) translateX(-50%);
-    transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0.3s ease-out;
+    transition: opacity 0.3s ease;
 }
 
 .filter-menu.show {
+    display: block;
     opacity: 1;
-    visibility: visible;
-    transform: translateY(0) translateX(-50%);
 }
 
 #filterForm {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    align-items: flex-start;
-    gap: 20px;
-    width: 100%;
-}
-
-.filter-left-column {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    flex-shrink: 0;
-    min-width: 150px;
-    max-width: 180px;
-}
-
-.filter-menu fieldset {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 10px 15px;
-    margin: 0;
-}
-
-.filter-genres,
-.filter-themes,
-.filter-countries {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    gap: 10px;
-    flex: 1 1 250px;
-    min-width: 200px;
-    max-width: 400px;
-}
-
-.filter-released,
-.filter-content-rating {
-    display: flex;
-    flex: 1 1 auto;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    align-items: flex-start;
-    gap: 5px;
-    padding: 10px 15px;
-}
-
-.filter-menu legend {
-    font-weight: bold;
-    font-size: 0.95em;
-    color: #333;
-    padding: 0 8px;
-    margin-bottom: 5px;
-    margin-left: -5px;
-}
-
-.filter-menu label {
-    display: flex;
-    align-items: center;
-    font-size: 0.8rem;
-    color: #555;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.filter-menu input[type="checkbox"] {
-    margin-right: 5px;
-    appearance: none;
-    width: 14px;
-    height: 14px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    outline: none;
-    cursor: pointer;
-    position: relative;
-    transition: border-color 0.2s ease, background-color 0.2s ease;
-}
-
-.filter-menu input[type="checkbox"]:checked {
-    background-color: #2196f3;
-    border-color: #2196f3;
-}
-
-.filter-menu input[type="checkbox"]:checked::after {
-    content: '✓';
-    color: white;
-    font-size: 8px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.filter-actions {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    width: 100%;
-    margin-top: 15px;
-    padding-top: 10px;
-    border-top: 1px solid #eee;
-}
-
-.action-btn {
-    background-color: #2196f3;
-    color: white;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    transition: background-color 0.2s ease;
-}
-
-.action-btn:hover {
-    background-color: #1976d2;
-}
-
-.action-btn img {
-    filter: brightness(0) invert(1);
-    width: 14px;
-    height: 14px;
-}
-
-.reset-btn {
-    background-color: #f44336;
-}
-
-.reset-btn:hover {
-    background-color: #d32f2f;
-}
-
-.hidden {
-    display: none;
-}
-
-/* ========================= MOVIE CARDS ======================== */
-.results-container {
     display: grid;
-    /* This creates a responsive grid that fills the space evenly */
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 20px; /* Reduced gap for a tighter look */
-    padding: 20px 5%;
-    justify-content: center;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+/* ========================= 3. RESULTS HEADER ======================== */
+.results-header {
+    display: none; 
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 5%;
+    margin: 20px 0 0 0; 
+}
+
+.results-header.show-results {
+    display: flex !important;
+}
+
+.view-all-btn {
+    background: #FF0066;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.view-all-btn:hover {
+    background: #e6005c;
+}
+
+/* ========================= 4. MOVIE CARDS & HOVER POP ======================== */
+.results-wrapper {
+    position: relative;
+    /* FIX: Increased top padding to 70px to ensure 'Selected' badge doesn't hit the container edge */
+    padding: 70px 5% 40px 5%; 
+    overflow: visible; 
 }
 
 .movie-card {
-    position: relative; /* Crucial for the badge positioning */
-    background: transparent;
-    border: none;
-    width: 100%; /* Let the grid control the width */
-    max-width: 200px; /* Prevents cards from getting too huge on big screens */
-    transition: transform 0.3s ease;
+    position: relative;
+    flex: 0 0 180px;
+    max-width: 180px;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     cursor: pointer;
-    display: flex;
-    flex-direction: column;
+    z-index: 1;
 }
 
 .movie-card:hover {
-    transform: translateY(-10px); /* Lift effect instead of just scaling */
+    transform: scale(1.1) translateY(-15px);
+    z-index: 1500;
 }
 
 .movie-card img {
@@ -260,136 +143,129 @@ body {
     aspect-ratio: 2/3;
     object-fit: cover;
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 .movie-card h3 {
     font-family: 'Poppins', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #333;
+    font-size: 0.9rem;
     margin-top: 10px;
-    text-align: left;
-    /* Helps with long titles */
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    color: #333;
 }
 
-/* ========================= SELECTED STATE FIX ======================== */
+/* ========================= 5. SELECTED STATE & BADGE ======================== */
 .selected-movie {
-    /* We apply the border to a wrapper or handle it via a pseudo-element 
-       to prevent it from shifting the card position */
     outline: 3px solid #FF0066;
-    outline-offset: 5px;
+    outline-offset: 6px;
     border-radius: 12px;
 }
 
 .selected-badge {
     position: absolute;
-    top: -10px; /* Moves it slightly above the card */
-    left: 10px;
+    /* Fixed position to stay within the wrapper's safe zone */
+    top: -35px; 
+    left: 50%;
+    transform: translateX(-50%);
     background-color: #FF0066;
     color: white;
-    padding: 2px 10px;
+    padding: 2px 12px;
     font-size: 0.7rem;
     font-weight: bold;
     border-radius: 4px;
-    z-index: 10;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    white-space: nowrap;
+    z-index: 1600;
 }
 
-/* ========================= ADULT BADGES ======================== */
-.movie-poster[data-blur="false"] {
-    filter: none;
-}
-
-.black-overlay {
-    width: 100%;
-    height: 300px;
-    background-color: black;
-    border-radius: 8px;
-    position: relative;
-}
-
-.badge-18 {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    color: red;
-    font-weight: bold;
-    font-size: 16px;
-    background-color: rgba(255, 255, 255, 0.1);
-    padding: 4px 8px;
-    border: 2px solid red;
-    border-radius: 5px;
-}
-
-/* ========================= POPUP DETAIL ======================== */
-.movie-overlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    background-color: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(5px);
+/* ========================= 6. SLIDER & FIXED GRID STATES ======================== */
+.results-container.horizontal-scroll {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    /* Browser fix: manually setting visible while scroll is active often fails without extra padding */
+    overflow-y: visible; 
+    gap: 30px; 
+    /* Internal padding to clear the scroller and border */
+    padding: 15px 0;
+    margin-top: -15px;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
 }
 
-.movie-popup {
-    background: white;
-    border-radius: 12px;
-    max-width: 700px;
-    width: 90%;
-    padding: 20px;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-}
-
-.movie-overlay.hidden {
+.results-container.horizontal-scroll::-webkit-scrollbar {
     display: none;
 }
 
-.close-popup {
+.results-container.grid-view {
+    display: grid !important; 
+    grid-template-columns: repeat(auto-fill, 180px); 
+    justify-content: space-between; 
+    column-gap: 20px; 
+    row-gap: 80px; /* Space for badges in the next row */
+    padding: 20px 0; 
+    overflow-y: visible; 
+    overflow-x: hidden; 
+}
+
+.results-container.grid-view .movie-card {
+    width: 180px; 
+    height: fit-content;
+    flex: none;
+    margin: 0;
+}
+
+/* ========================= 7. ARROWS (SLIDER ONLY) ======================== */
+.scroll-arrow {
     position: absolute;
-    top: 10px;
-    right: 15px;
-    background: crimson;
-    color: white;
+    /* Adjusted top to match the center of the card despite wrapper padding */
+    top: calc(50% + 15px);
+    transform: translateY(-50%);
+    background: transparent !important;
     border: none;
-    font-size: 20px;
-    padding: 5px 10px;
-    border-radius: 50%;
     cursor: pointer;
+    z-index: 1000;
+    color: #FF0066;
+    font-size: 4rem; 
+    font-weight: bold;
+    display: none !important; 
+    padding: 0;
+    transition: color 0.2s ease;
 }
 
-/* ========================= SPINNER ======================== */
+#scrollLeft { left: 10px; }
+#scrollRight { right: 10px; }
+
+.scroll-arrow.show-results {
+    display: flex !important;
+}
+
+.results-container.grid-view ~ .scroll-arrow {
+    display: none !important;
+}
+
+/* ========================= 8. OVERLAYS & SPINNERS ======================== */
+.movie-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5000;
+}
+
+.hidden { display: none !important; }
+
 .spinner {
-    border: 4px solid transparent;
-    border-top: 4px solid #222;
+    border: 4px solid rgba(0,0,0,0.1);
+    border-top: 4px solid #FF0066;
     border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    animation: classicSpin 0.8s linear infinite;
-    background: transparent;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
 }
 
-@keyframes classicSpin {
-    0% { transform: rotate(0deg);}
-    100% { transform: rotate(360deg);}
-}
-
-/* ========================= MOBILE RESPONSIVE ======================== */
-@media (max-width: 768px) {
-    .movie-card {
-        width: 100%;
-    }
-
-    .results-container {
-        justify-content: center;
-    }
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }

@@ -54,10 +54,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- Search Logic ---
+    // --- Search Logic & UI References ---
     const searchInput = document.querySelector('.searchInput');
     const searchBtn = document.querySelector('.okbtn');
     const loadingOverlay = document.getElementById('loadingOverlay');
+    const resultsContainer = document.getElementById('results');
+    const scrollRightBtn = document.getElementById('scrollRight');
+    const scrollLeftBtn = document.getElementById('scrollLeft'); 
+    const viewAllBtn = document.getElementById('viewAllBtn');
+    const resultsHeader = document.querySelector('.results-header');
 
     function showLoadingForTwoSeconds() {
         if (loadingOverlay) {
@@ -66,6 +71,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 loadingOverlay.style.display = 'none';
             }, 2000);
         }
+    }
+
+    // --- View All Toggle Logic ---
+    if (viewAllBtn) {
+        viewAllBtn.addEventListener('click', () => {
+            resultsContainer.classList.toggle('horizontal-scroll');
+            resultsContainer.classList.toggle('grid-view');
+            
+            const isGridView = resultsContainer.classList.contains('grid-view');
+            viewAllBtn.textContent = isGridView ? 'Show Less' : 'View All';
+            
+            // Hide arrows when Grid View is active
+            const arrows = [scrollLeftBtn, scrollRightBtn];
+            arrows.forEach(arrow => {
+                if (arrow) {
+                    if (isGridView) {
+                        arrow.setAttribute('style', 'display: none !important');
+                    } else {
+                        arrow.setAttribute('style', 'display: flex !important');
+                    }
+                }
+            });
+        });
     }
 
     function performSearch() {
@@ -89,15 +117,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 return res.json();
             })
             .then(data => {
+                resultsContainer.innerHTML = '';
+                
+                // Hide UI elements initially
+                if (resultsHeader) resultsHeader.classList.remove('show-results');
+                if (scrollLeftBtn) scrollLeftBtn.setAttribute('style', 'display: none !important');
+                if (scrollRightBtn) scrollRightBtn.setAttribute('style', 'display: none !important');
+
                 if (data.results && data.results.length > 0) {
-                    const resultsContainer = document.getElementById('results');
-                    resultsContainer.innerHTML = '';
+                    // ✅ SUCCESS: Show Header
+                    if (resultsHeader) resultsHeader.classList.add('show-results');
+                    
+                    // ✅ FIX: Check current view state before showing arrows
+                    const isGridView = resultsContainer.classList.contains('grid-view');
+
+                    // ✅ SUCCESS: Set Transparent Arrow Symbols and Show ONLY if NOT in grid view
+                    if (scrollLeftBtn) {
+                        scrollLeftBtn.innerHTML = '&lt;'; 
+                        if (!isGridView) scrollLeftBtn.setAttribute('style', 'display: flex !important');
+                        scrollLeftBtn.onclick = () => resultsContainer.scrollBy({ left: -500, behavior: 'smooth' });
+                    }
+                    if (scrollRightBtn) {
+                        scrollRightBtn.innerHTML = '&gt;'; 
+                        if (!isGridView) scrollRightBtn.setAttribute('style', 'display: flex !important');
+                        scrollRightBtn.onclick = () => resultsContainer.scrollBy({ left: 500, behavior: 'smooth' });
+                    }
 
                     data.results.forEach((movie, index) => {
                         const card = document.createElement('div');
                         card.className = `movie-card ${index === 0 ? 'selected-movie' : ''}`;
 
-                        // 1. Selected Badge
                         if (index === 0) {
                             const badge = document.createElement('div');
                             badge.className = 'selected-badge';
@@ -105,7 +154,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             card.appendChild(badge);
                         }
 
-                        // 2. Poster Image
                         const img = document.createElement('img');
                         img.className = 'movie-poster';
                         img.src = `https://image.tmdb.org/t/p/w500${movie.poster_path || ''}`;
@@ -115,7 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             this.src = '/static/icons/fallback.svg';
                         };
 
-                        // 3. Adult/18+ Logic
                         if (movie.adult) {
                             img.style.display = 'none';
                             const blackOverlay = document.createElement('div');
@@ -129,32 +176,26 @@ document.addEventListener('DOMContentLoaded', () => {
                             card.appendChild(img);
                         }
 
-                        // 4. Movie Title
                         const movieTitle = document.createElement('h3');
                         movieTitle.textContent = movie.title || 'Untitled Movie';
                         card.appendChild(movieTitle);
 
-                        // 5. Modal Click Handler
                         card.onclick = () => {
                             const overlay = document.getElementById('movieOverlay');
                             const content = document.getElementById('movieDetailContent');
-                            overlay.classList.remove('hidden');
-                            content.innerHTML = '<div class="spinner"></div>';
-
-                            fetch(`/movie_detail?title=${encodeURIComponent(movie.title)}`)
-                                .then(res => res.text())
-                                .then(html => {
-                                    content.innerHTML = html;
-                                })
-                                .catch(() => {
-                                    content.innerHTML = 'Failed to load details.';
-                                });
+                            if (overlay && content) {
+                                overlay.classList.remove('hidden');
+                                content.innerHTML = '<div class="spinner"></div>';
+                                fetch(`/movie_detail?title=${encodeURIComponent(movie.title)}`)
+                                    .then(res => res.text())
+                                    .then(html => { content.innerHTML = html; })
+                                    .catch(() => { content.innerHTML = 'Failed to load details.'; });
+                            }
                         };
-
                         resultsContainer.appendChild(card);
                     });
                 } else {
-                    alert(data.error || data.message || "No results.");
+                    alert(data.error || data.message || "No results found.");
                 }
             })
             .catch(err => {
@@ -164,7 +205,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     searchBtn.addEventListener('click', performSearch);
-
     searchInput.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
             event.preventDefault();
@@ -172,10 +212,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Close Popup Logic
     document.addEventListener('click', function (e) {
         if (e.target.classList.contains('close-popup')) {
-            document.getElementById('movieOverlay').classList.add('hidden');
+            const overlay = document.getElementById('movieOverlay');
+            if (overlay) overlay.classList.add('hidden');
         }
     });
 });
