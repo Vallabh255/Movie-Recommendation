@@ -1,4 +1,7 @@
+.venv/
 venv/
-__pycache__/
+**/__pycache__/
 *.pyc
 .env
+index_data.pkl
+faiss.index

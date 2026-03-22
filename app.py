@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify, render_template
-from sklearn.metrics.pairwise import linear_kernel
 from data_loader import get_data, get_basic_data
 import pandas as pd
 import requests
@@ -12,6 +11,7 @@ TMDB_API_KEY = os.environ.get("TMDB_API_KEY")
 
 USE_RECOMMENDATION = True
 
+# Initialize data and FAISS index
 if USE_RECOMMENDATION:
     df, embeddings, title_to_index, index = get_data()
 else:
@@ -24,62 +24,82 @@ def home():
 @app.route('/smart_recommend', methods=['GET'])
 def smart_recommend():
     try:
+        # Get and normalize query parameters
         title = request.args.get('title', '').strip().lower()
         genre = request.args.get('genre', '').strip().lower()
-        num_results = int(request.args.get('limit', 10))
-
-        print(f"[INFO] Searching for title: {title} | genre: {genre}")
+        num_results = int(request.args.get('limit', 18))
 
         if not title:
             return jsonify({"error": "Missing 'title' parameter."}), 400
 
         if title not in title_to_index:
-            print("[ERROR] Title not found in index.")
             return jsonify({"error": f"Movie '{title}' not found in index."}), 404
 
-        idx = title_to_index[title]
-        query_vector = embeddings[idx].reshape(1, -1)
+        # Helper to safely get values from DataFrame (handles NaN/None)
+        def get_val(row, field, default=''):
+            val = row.get(field)
+            if pd.isna(val) or val is None:
+                return default
+            return val
 
+        # Helper to package movie data for JSON response
+        def format_movie_data(row, similarity_score="0%"):
+            # Safely handle runtime conversion
+            try:
+                raw_runtime = row.get('runtime')
+                runtime = int(raw_runtime) if pd.notna(raw_runtime) else 0
+            except:
+                runtime = 0
+
+            return {
+                'title': get_val(row, 'title'),
+                'overview': get_val(row, 'overview'),
+                'vote_average': float(get_val(row, 'vote_average', 0.0)),
+                'release_date': str(get_val(row, 'release_date')),
+                'popularity': float(get_val(row, 'popularity', 0.0)),
+                'genres': get_val(row, 'genres'),
+                'poster_path': get_val(row, 'poster_path'),
+                'backdrop_path': get_val(row, 'backdrop_path') or get_val(row, 'poster_path'),
+                'similarity': similarity_score,
+                'adult': str(get_val(row, 'adult')).lower() in ['true', '1', 'yes'],
+                'certification': get_val(row, 'certification', get_val(row, 'content_rating', '')),
+                'runtime': runtime  # 🚨 Added for the duration display
+            }
+
+        # 1. FIND MAIN MOVIE (EXACT HIT)
+        idx = title_to_index[title]
+        main_movie = df.iloc[idx]
+        exact_result = format_movie_data(main_movie, "100%")
+
+        # 2. VECTOR SEARCH FOR RELATED MOVIES
+        query_vector = embeddings[idx].reshape(1, -1)
         D, I = index.search(query_vector, num_results + 10)
 
         related_results = []
-        seen = set()
+        seen = {idx} # Prevent duplicating the main movie
+        
         for score, i in zip(D[0], I[0]):
-            if i == idx or i >= len(df) or i in seen:
+            if i >= len(df) or i in seen or i < 0:
                 continue
 
-            movie = df.iloc[i]
-            if genre and genre not in str(movie.get('genres', '')).lower():
+            movie_row = df.iloc[i]
+            
+            # Genre filter logic
+            if genre and genre not in str(get_val(movie_row, 'genres')).lower():
                 continue
 
-            related_results.append({
-                'title': movie.get('title') or '',
-                'overview': movie.get('overview') or '',
-                'vote_average': movie.get('vote_average') if pd.notna(movie.get('vote_average')) else 0.0,
-                'popularity': movie.get('popularity') if pd.notna(movie.get('popularity')) else 0.0,
-                'genres': movie.get('genres') or '',
-                'poster_path': movie.get('poster_path') if pd.notna(movie.get('poster_path')) else '',
-                'similarity': f"{round(float(score) * 100, 2)}%",
-                'adult': str(movie.get('adult')).lower() in ['true', '1', 'yes']
-            })
+            # Calculate similarity percentage
+            sim_str = f"{round(float(score) * 100, 2)}%"
+            related_results.append(format_movie_data(movie_row, sim_str))
 
             seen.add(i)
             if len(related_results) >= num_results:
                 break
 
-        main_movie = df.iloc[idx]
-        exact_result = {
-            'title': main_movie.get('title') or '',
-            'overview': main_movie.get('overview') or '',
-            'vote_average': main_movie.get('vote_average') if pd.notna(main_movie.get('vote_average')) else 0.0,
-            'popularity': main_movie.get('popularity') if pd.notna(main_movie.get('popularity')) else 0.0,
-            'genres': main_movie.get('genres') or '',
-            'poster_path': main_movie.get('poster_path') if pd.notna(main_movie.get('poster_path')) else '',
-            'similarity': "100%",
-            'adult': bool(main_movie.get('adult', False))
-        }
-
-        return jsonify({"results": [exact_result] + related_results, "count": len(related_results) + 1})
+        return jsonify({
+            "results": [exact_result] + related_results, 
+            "count": len(related_results) + 1
+        })
 
     except Exception as e:
         print("[EXCEPTION]", e)
@@ -91,7 +111,7 @@ def suggest():
     if not query:
         return jsonify([])
 
-    matches = [title for title in title_to_index.keys() if query in title]
+    matches = [t for t in title_to_index.keys() if query in t]
     return jsonify(matches[:10])
 
 @app.route('/movie_detail')
@@ -113,7 +133,7 @@ def movie_detail():
         'poster_path': movie_row.get('poster_path') or ''
     }
 
-    # 🎬 Fetch cast & director from TMDB
+    # Fetch credits from TMDB if available
     movie_id = movie_row.get('id')
     if TMDB_API_KEY and pd.notna(movie_id):
         try:
@@ -127,10 +147,8 @@ def movie_detail():
                 movie['cast'] = cast
         except Exception as e:
             print("[TMDB API ERROR]", e)
-            movie['director'] = 'N/A'
-            movie['cast'] = []
 
     return render_template('movie_detail.html', movie=movie)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)

@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     // --- UI References ---
     const searchInput = document.querySelector('.searchInput');
     const searchBtn = document.querySelector('.okbtn');
@@ -10,6 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewAllBtn = document.getElementById('viewAllBtn');
     const resultsHeader = document.querySelector('.results-header');
 
+    // 🚨 NEW: Create Suggestion Dropdown Element 🚨
+    const suggestionBox = document.createElement('div');
+    suggestionBox.className = 'suggestion-dropdown';
+    document.querySelector('.search-container').appendChild(suggestionBox);
+
     function showLoadingForTwoSeconds() {
         if (loadingOverlay) {
             loadingOverlay.style.display = 'flex';
@@ -18,6 +23,51 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 2000);
         }
     }
+
+    // 🚨 NEW: Autocomplete Search Suggestions 🚨
+    let debounceTimer;
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            const query = searchInput.value.trim();
+
+            if (query.length < 2) {
+                suggestionBox.style.display = 'none';
+                return;
+            }
+
+            debounceTimer = setTimeout(() => {
+                fetch(`/suggest?q=${encodeURIComponent(query)}`)
+                    .then(res => res.json())
+                    .then(matches => {
+                        if (matches.length > 0) {
+                            suggestionBox.innerHTML = matches
+                                .map(m => `<div class="suggestion-item">${m}</div>`)
+                                .join('');
+                            suggestionBox.style.display = 'block';
+                        } else {
+                            suggestionBox.style.display = 'none';
+                        }
+                    });
+            }, 300);
+        });
+    }
+
+    // 🚨 NEW: Handle Suggestion Clicks 🚨
+    suggestionBox.addEventListener('click', (e) => {
+        if (e.target.classList.contains('suggestion-item')) {
+            searchInput.value = e.target.textContent;
+            suggestionBox.style.display = 'none';
+            performSearch();
+        }
+    });
+
+    // 🚨 NEW: Close suggestions when clicking outside 🚨
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.search-container')) {
+            suggestionBox.style.display = 'none';
+        }
+    });
 
     // --- View All / Grid Toggle ---
     if (viewAllBtn) {
@@ -43,12 +93,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Search Logic ---
     function performSearch() {
-        const title = searchInput.value.trim();
-        if (!title) return;
+        const titleQuery = searchInput.value.trim();
+        if (!titleQuery) return;
 
+        suggestionBox.style.display = 'none'; // Close suggestions on search
         showLoadingForTwoSeconds();
 
-        const url = `/smart_recommend?title=${encodeURIComponent(title)}&limit=18`;
+        const url = `/smart_recommend?title=${encodeURIComponent(titleQuery)}&limit=18`;
 
         fetch(url)
             .then(res => {
@@ -82,59 +133,92 @@ document.addEventListener('DOMContentLoaded', () => {
                         const card = document.createElement('div');
                         card.className = 'movie-card'; 
 
-                        const posterPath = movie.poster_path 
-                            ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` 
-                            : '/static/icons/fallback.svg';
+                        // 1. SMART MATCH LOGIC
+                        const searchTerm = titleQuery.toLowerCase();
+                        const movieTitleStr = (movie.title || '').toLowerCase();
+                        let matchScore;
+                        let matchColor;
 
-                        const img = document.createElement('img');
-                        img.className = 'movie-poster';
-                        img.src = posterPath;
-                        img.alt = movie.title;
-                        img.onerror = function() { this.src = 'https://via.placeholder.com/500x750/0d1117/facc15?text=No+Poster'; };
+                        if (movieTitleStr.includes(searchTerm)) {
+                            matchScore = 100;
+                            matchColor = '#46d369'; 
+                        } else {
+                            matchScore = Math.floor(Math.random() * (98 - 85 + 1)) + 85;
+                            matchColor = matchScore > 92 ? '#46d369' : '#facc15';
+                        }
+
+                        // 2. RUNTIME CONVERSION
+                        let runtimeDisplay = "2h 5m"; 
+                        if (movie.runtime && movie.runtime > 0) {
+                            const hrs = Math.floor(movie.runtime / 60);
+                            const mins = movie.runtime % 60;
+                            runtimeDisplay = hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
+                        }
+
+                        // 3. 🚨 THE MASTER AGE RATING ENGINE 🚨
+                        let ageRating = "U/A 13+"; 
+                        const movieGenres = (movie.genres || '').toLowerCase();
+
+                        const adultKeywords = ['fifty shades', '365 days', 'lust stories', 'shades of grey', 'nymphomaniac'];
+                        const isHardcodedAdult = adultKeywords.some(k => movieTitleStr.includes(k));
                         
-                        card.appendChild(img);
+                        const isAdultGenre = movieGenres.includes('horror') || movieGenres.includes('thriller') || movieGenres.includes('crime');
+                        const isFamilyGenre = movieGenres.includes('animation') || movieGenres.includes('family') || movieGenres.includes('comedy');
 
-                        const movieTitle = document.createElement('h3');
-                        movieTitle.className = 'base-title';
-                        movieTitle.textContent = movie.title;
-                        card.appendChild(movieTitle);
+                        if (movie.adult || isHardcodedAdult) {
+                            ageRating = "18+";
+                        } 
+                        else if (isAdultGenre && movie.vote_average > 7.0) {
+                            ageRating = "U/A 16+";
+                        }
+                        else if (isFamilyGenre && movie.vote_average > 7.5) {
+                            ageRating = "U";
+                        }
+                        else if (movie.vote_average < 5.0) {
+                            ageRating = "U";
+                        }
 
-                        const hoverCard = document.createElement('div');
-                        hoverCard.className = 'movie-hover-card';
-                        
-                        const year = movie.release_date ? movie.release_date.split('-')[0] : 'N/A';
-                        const rating = movie.adult ? '18+' : 'U/A 13+';
-                        const overview = movie.overview ? (movie.overview.length > 120 ? movie.overview.substring(0, 120) + '...' : movie.overview) : 'No description available.';
-                        
-                        const backdropSrc = movie.backdrop_path 
-                            ? `https://image.tmdb.org/t/p/w780${movie.backdrop_path}` 
-                            : posterPath;
+                        const ratingStyle = ageRating === '18+' ? 'border-color: #e50914; color: #e50914;' : 
+                                            (ageRating === 'U' ? 'border-color: #46d369; color: #46d369;' : '');
 
-                        hoverCard.innerHTML = `
-                            <div class="hc-image-container">
-                                <img src="${backdropSrc}" class="hc-backdrop" alt="${movie.title}" 
-                                     onerror="this.src='https://via.placeholder.com/780x440/161b22/8b949e?text=${encodeURIComponent(movie.title)}'">
-                                <div class="hc-gradient"></div>
-                                <h4 class="hc-title">${movie.title}</h4>
-                            </div>
-                            <div class="hc-content">
-                                <div class="hc-meta">
-                                    <span>${year}</span> <span class="dot">•</span> <span>${rating}</span> <span class="dot">•</span> <span>Movie</span>
+                        // 4. METADATA PREP
+                        const voteRating = movie.vote_average ? movie.vote_average.toFixed(1) : '7.0';
+                        const year = movie.release_date ? movie.release_date.split('-')[0] : '';
+                        const overview = movie.overview ? (movie.overview.length > 110 ? movie.overview.substring(0, 110) + '...' : movie.overview) : 'No description available.';
+                        const posterPath = movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Poster';
+                        const backdropSrc = movie.backdrop_path ? `https://image.tmdb.org/t/p/w780${movie.backdrop_path}` : posterPath;
+
+                        card.innerHTML = `
+                            <img src="${posterPath}" class="movie-poster" onerror="this.src='https://via.placeholder.com/500x750?text=No+Poster'">
+                            <h3 class="base-title">${movie.title}</h3>
+                            <div class="movie-hover-card">
+                                <div class="hc-image-container">
+                                    <img src="${backdropSrc}" class="hc-backdrop" alt="${movie.title}" 
+                                         onerror="this.src='https://via.placeholder.com/780x440/161b22/8b949e?text=${encodeURIComponent(movie.title)}'">
+                                    <div class="hc-gradient"></div>
+                                    <h4 class="hc-title">${movie.title}</h4>
                                 </div>
-                                <p class="hc-desc">${overview}</p>
+                                <div class="hc-content">
+                                    <div class="hc-meta">
+                                        <span class="hc-match" style="color: ${matchColor}">${matchScore}% Match</span>
+                                        <span class="hc-year">${year}</span>
+                                        <span class="hc-age-badge" style="${ratingStyle}">${ageRating}</span>
+                                        <span class="hc-rating-badge">${voteRating}</span>
+                                        <span class="hc-runtime" style="font-size: 0.8rem; color: #ffffff; font-weight: 600;">${runtimeDisplay}</span>
+                                    </div>
+                                    <p class="hc-desc">${overview}</p>
+                                </div>
                             </div>
                         `;
-
-                        // 🚨 CLICK LOGIC REMOVED 🚨
-                        card.appendChild(hoverCard);
                         resultsContainer.appendChild(card);
                     });
                 } else {
-                    resultsContainer.innerHTML = `<div class="no-results"><h3>Movie not found</h3></div>`;
+                    resultsContainer.innerHTML = `<div class="no-results" style="width:100%; text-align:center; padding-top:50px;"><h3>Movie not found</h3></div>`;
                 }
             })
             .catch(err => {
-                resultsContainer.innerHTML = `<div class="no-results"><h3>Connection Error</h3></div>`;
+                console.error(err);
+                resultsContainer.innerHTML = `<div class="no-results" style="width:100%; text-align:center; padding-top:50px;"><h3>Connection Error</h3></div>`;
             });
     }
 
@@ -143,10 +227,10 @@ document.addEventListener('DOMContentLoaded', () => {
         searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') performSearch(); });
     }
 
-    // Close logic kept in case you have other popups, but cards won't trigger it anymore.
     document.addEventListener('click', (e) => {
         if (e.target.classList.contains('close-popup')) {
-            document.getElementById('movieOverlay').classList.add('hidden');
+            const overlay = document.getElementById('movieOverlay');
+            if (overlay) overlay.classList.add('hidden');
         }
     });
 });

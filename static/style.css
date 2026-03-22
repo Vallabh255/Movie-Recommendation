@@ -110,7 +110,7 @@ body {
 }
 .view-all-btn:hover { background: #21262d; }
 
-/* ========================= 4. MOVIE CARDS & HOVER POP-OUT ======================== */
+/* ========================= 4. MOVIE CARDS & SMART ALIGNMENT ======================== */
 .results-wrapper {
     position: relative; padding: 0; overflow: visible !important;
 }
@@ -127,7 +127,6 @@ body {
     flex-direction: column; 
 }
 
-/* Base Hover State */
 .movie-card:hover {
     z-index: 150; 
 }
@@ -149,14 +148,11 @@ body {
     text-align: center;
 }
 
-/* 🚨 SMART ALIGNMENT FOR POP-OUT CARDS 🚨 */
 .movie-hover-card {
     position: absolute;
     top: -20px; 
-    /* Default: Align to center of the 180px card */
     left: 50%;
     transform: translateX(-50%) scale(0.85); 
-    
     width: 320px; 
     background: #161b22; 
     border-radius: 12px;
@@ -169,10 +165,9 @@ body {
     z-index: 100;
     transition: all 0.3s ease;
     transition-delay: 0s; 
-    transform-origin: center center; /* Default origin */
+    transform-origin: center center;
 }
 
-/* Trigger Pop-out */
 .movie-card:hover .movie-hover-card {
     opacity: 1;
     visibility: visible;
@@ -180,9 +175,7 @@ body {
     transition-delay: 0.4s; 
 }
 
-/* 🚨 EDGE DETECTION FIX 🚨 */
-
-/* For the FIRST movie card in the list: Align to the LEFT edge */
+/* Edge Detection for Pop-outs */
 .movie-card:first-child .movie-hover-card {
     left: 0 !important;
     transform: translateX(0) scale(0.85) !important;
@@ -192,7 +185,6 @@ body {
     transform: translateX(0) scale(1) !important;
 }
 
-/* For the LAST movie card in the list: Align to the RIGHT edge */
 .movie-card:last-child .movie-hover-card {
     left: auto !important;
     right: 0 !important;
@@ -203,7 +195,7 @@ body {
     transform: translateX(0) scale(1) !important;
 }
 
-/* 🚨 IMAGE & CONTENT STYLES 🚨 */
+/* Content Styles */
 .hc-image-container {
     position: relative;
     width: 100%;
@@ -235,18 +227,42 @@ body {
     text-shadow: 0 2px 4px rgba(0,0,0,0.8);
 }
 
-.hc-content {
-    padding: 15px;
-}
+.hc-content { padding: 15px; }
 
+/* 🚨 REFINED METADATA STYLES 🚨 */
 .hc-meta {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #9ca3af;
-    margin-bottom: 10px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85rem;
+}
+
+.hc-match {
+    color: #46d369;
+    font-weight: 800;
+}
+
+.hc-year { color: #ffffff; }
+
+.hc-age-badge, .hc-rating-badge {
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 0 6px;
+    font-size: 0.7rem;
+    border-radius: 2px;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* 🚨 REPLACED HD WITH RUNTIME STYLE 🚨 */
+.hc-runtime {
+    font-size: 0.8rem;
+    color: #ffffff;
+    font-weight: 600;
+    white-space: nowrap;
 }
 
 .hc-desc {
@@ -267,14 +283,12 @@ body {
     overflow-x: auto;
     justify-content: flex-start;
     gap: 12px; 
-    padding: 40px 60px; /* Padding provides space for the hover pop-out */
+    padding: 40px 60px;
     scrollbar-width: none !important; 
     -ms-overflow-style: none !important; 
 }
 
-.results-container.horizontal-scroll::-webkit-scrollbar { 
-    display: none !important; 
-}
+.results-container.horizontal-scroll::-webkit-scrollbar { display: none !important; }
 
 .results-container.grid-view {
     display: grid !important; 
@@ -285,7 +299,7 @@ body {
     padding: 40px 60px; 
 }
 
-/* ========================= 6. ARROWS (ULTIMATE PRIORITY) ======================== */
+/* ========================= 6. ARROWS ======================== */
 .scroll-arrow {
     position: absolute; 
     top: 40%; 
@@ -293,13 +307,12 @@ body {
     background: rgba(20, 20, 20, 0.8) !important; 
     border: none; 
     cursor: pointer;
-    z-index: 200 !important; /* Force arrows to stay above pop-out cards */
+    z-index: 200 !important;
     color: #ffffff; 
     opacity: 1; 
     display: none !important; 
     padding: 0;
     transition: background 0.2s, transform 0.2s; 
-    
     display: flex; 
     justify-content: center;
     align-items: center;
@@ -308,21 +321,13 @@ body {
     border-radius: 50%; 
     backdrop-filter: blur(12px); 
     -webkit-backdrop-filter: blur(12px); 
-    
     font-size: 2.5rem; 
     text-shadow: 0 1px 4px rgba(0,0,0,0.5); 
 }
 
-.scroll-arrow:hover { 
-    background: rgba(40, 40, 40, 0.95) !important; 
-    transform: translateY(-50%) scale(1.1); 
-}
-
 #scrollLeft { left: 10px; } 
 #scrollRight { right: 10px; }
-
 .scroll-arrow.show-results { display: flex !important; }
-.results-container.grid-view ~ .scroll-arrow { display: none !important; }
 
 /* ========================= 7. OVERLAYS & SPINNERS ======================== */
 .movie-overlay {
@@ -337,3 +342,40 @@ body {
     border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+/* --- Suggestion Dropdown --- */
+.search-container {
+    position: relative; /* Keep dropdown anchored here */
+}
+
+.suggestion-dropdown {
+    position: absolute;
+    top: 110%; /* Just below the search bar */
+    left: 20px;
+    right: 20px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 2000;
+    display: none;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.suggestion-item {
+    padding: 12px 20px;
+    cursor: pointer;
+    color: #cbd5e1;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #21262d;
+    transition: background 0.2s;
+}
+
+.suggestion-item:hover {
+    background: #21262d;
+    color: #facc15; /* Highlight in Yellow */
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
